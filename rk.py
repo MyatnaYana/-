@@ -5,7 +5,7 @@ class File:
     def __init__(self, id, filename, memory, log_id):
         self.id = id
         self.filename = filename
-        self.memory = memory     “”” Память измеряется в Мб”””
+        self.memory = memory     """"Память измеряется в Мб""""
         self.log_id = log_id
 
 class Catalog:
