@@ -1,93 +1,90 @@
 from operator import itemgetter
+import self as self
 
 class File:
-    def __init__(self, name, id, memory, gr_id):
+    def __init__(self, id, filename, memory, log_id):
         self.id = id
-		self.name = name
-        self.memory = memory  
-        self.log_id = log_id  
-                            
+        self.filename = filename
+        self.memory = memory     “”” Память измеряется в Мб”””
+        self.log_id = log_id
+
 class Catalog:
-    def __init__(self, name, id):
-        self.name = name
+    def __init__(self, id, name):
         self.id = id
+        self.name = name
 
 class Fillog:
-    def __init__(self, fileId, logId):
-        self.file_id = fileId
-        self.log_id = logId
+    def __init__(self, log_id, fillog_id):
+        self.log_id = log_id
+        self.fillog_id = fillog_id
 
+    catalogs = [
+        Catalog(1, 'Путешествия'),
+        Catalog(2, 'Сериалы'),
+        Catalog(3, 'АСОИУ'),
+        Catalog(4, 'Алиса') ]
 
-catalogs = [
-    Catalog ('Путешествия', 1)
-	Catalog ('Сериалы', 2)
-	Catalog ('АСОИУ', 3)
-	Catalog ('Алиса', 4)
-	
-	Catalog ('other Путешествия', 11)
-	Catalog ('other Сериалы', 22)
-	Catalog ('other АСОИУ', 33)
-	Catalog ('other Алиса', 44) ]
+    files = [
+        File(1, 'Аннотация 1-10', 36, 3),
+       File(2, 'Новая Зеландия', 1560, 1),
+        File(3, 'Акация', 5432, 2),
+        File(4, 'Концерт в Самаре 11.09', 2054, 4),
+        File(5, 'Контрольный вопрос 310', 53, 3), 
+        File(6, ‘Абхазия', 5783, 1) ]
 
-files = [
-    File(1, 'Новая Зеландия', 1.3, 1)
-	File(2, 'Аннотация 1-10', 0.2, 4)
-	File(3, 'Акация', 5, 2)
-	File(4,'Концерт в Самаре 11.09', 2, 5)
-	File(5,'Контрольный вопрос 310', 0.4, 4) ]
-
-file_catalogs = [
-    Fillog (1, 1)
-	Fillog (2, 3)
-	Fillog (3, 2)
-	Fillog (4, 4)
-	Fillog (5, 3)
-
-	 Fillog (1, 11)
-	Fillog (2, 33)
-	Fillog (3, 22)
-	Fillog (4, 44)
-	Fillog (5, 33) ]
-
-
+    file_catalogs = [
+        Fillog(1, 2),
+       Fillog(1, 6),
+        Fillog(2, 3),
+        Fillog(3, 1),
+        Fillog(3, 5),
+        Fillog(4, 4) ]
+        
+        
 def main():
-    one_to_many = [(f.name, f.rate, c.name)
-                   for c in catalogs
-                   for f in files if c.id == f.log_id]
+    one_to_many = [(f.filename, f.memory, c.name)
+               for c in catalogs
+               for f in files
+               if f.log_id == c.id]
 
-    many_to_many_temp = [(c.name, fc.stud_id, fc.grp_id)
-                         for c in catalogs
-                         for fc in log_id if c.id == fc.grp_id]
+    many_to_many_temp = [(c.name, fc.log_id, fc.fillog_id)
+                     for c in catalogs
+                     for fc in file_catalogs
+                     if c.id == fc.fillog_id]
 
-    many_to_many = [(f.name, f.memory, c_name)
-                    for c_name, st_id, c_id in many_to_many_temp
-                    for f in files if f.id == st_id]
+    many_to_many = [(f.filename, f.memory, name)
+                for name, log_id, fillog_id in many_to_many_temp
+                for f in files
+                if f.id == fillog_id]
 
-    print("Задание В1:")
-    res1 = []
-    for name, _, group in one_to_many:
-        if name[0] == "А":
-            res1.append((name, group))
-    print(res1)
+    print('Задание Г1')
 
-    print("\nЗадание B2:")
-    res2 = []
-    for g in groups:
-        g_students = list(filter(lambda x: x[2] == g.name, one_to_many))
+    res_1 = []
+    res_1 = [ (c.name, list (filename for filename, _, name in one_to_many if name == c.name)) for c in catalogs if c.name[0] == 'А' ]
+    print(res_1)
 
-        if len(g_students) > 0:
-            g_rate = [rate for _, rate, _ in g_students]
-            g_rate_min = min(g_rate)
-            res2.append((g.name, g_rate_min))
-    res2_sorted = sorted(res2, key=itemgetter(1))
-    print(res2_sorted)
+    print('\nЗадание Г2:')
+    res_2 = []
+    for c in catalogs:
+        log_files = list(filter(lambda x: x[2] == c.name, one_to_many))
+        if len(log_files) > 0:
+            mem = [size for _, size, _ in log_files]
+            max_mem = max(mem)
+            res_2.append((c.name, max_mem))
+    res_2sort = sorted(res_2, key=itemgetter(1))
+    print(res_2sort)
 
-    print("\nЗадание В3:")
-    res3 =[]
-    for name, _, group in many_to_many:
-        res3.append((name, group))
-    res3_sorted = sorted(res3, key=itemgetter(0))
-    print(res3_sorted)
-
-if __name__ == "__main__":
+    print('\nЗадание Г3:')
+   many_to_many_temp = [(f.filename, c.log_id)
+        for f in files
+        for c in file_catalogs
+        if f.id == c.fillog_id]
+    many_to_many = [(x[0], logs.name)
+        for x in many_to_many_temp
+        for logs in catalogs
+        if logs.id == x[1]]
+    res_3 = sorted(many_to_many, key = itemgetter(1), reverse = True)
+    print(res_3)
+if __name__ == '__main__':
     main()
+
